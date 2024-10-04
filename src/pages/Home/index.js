@@ -13,6 +13,8 @@ import { AuthContext } from '../../contexts/auth';
 
 import firestore from '@react-native-firebase/firestore'
 
+import PostsList from '../../components/PostsList';
+
 export default function Home() {
 
   const navigation = useNavigation();
@@ -72,7 +74,10 @@ export default function Home() {
       ) : (
         <ListPost
           data={posts}
-          renderItem={({item}) => (<Text>TESTE</Text>)}
+          renderItem={({item}) => (
+            <PostsList 
+            data={item} userId={user?.id}/>
+          )}
         />
       )}
 
