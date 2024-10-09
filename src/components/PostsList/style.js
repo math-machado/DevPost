@@ -24,7 +24,7 @@ export const Name = styled.Text`
 
 `;
 
-export const Avatar = styled.TouchableOpacity`
+export const Avatar = styled.Image`
     width: 40px;
     height: 40px;
     border-radius: 20px;
@@ -34,7 +34,8 @@ export const Avatar = styled.TouchableOpacity`
 export const ContentView = styled.View``;
 
 export const Content = styled.Text`
-    color: #353840
+    color: #353840;
+    margin: 8px 0px;
 `;
 
 export const Actions = styled.View`

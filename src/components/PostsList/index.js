@@ -3,36 +3,68 @@ import { Text } from 'react-native';
 
 import { Container, Name, Header, Avatar, ContentView, Content, Actions, LikeButton, Like, TimePost } from './style'
 
+import { formatDistance } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
-export default function PostsList() {
- return (
-   <Container>
-    <Header>
-        <Avatar source={require('../../assests/avatar.png')}/>
+import { useState } from 'react';
 
-        <Name numberOfLines={1}>
-        Matheus Machado
-        </Name>
-    </Header>
+export default function PostsList({data, userId}) { 
 
-    <ContentView>
-        <Content>Todo o conteudo do post</Content>
-    </ContentView>
+    const [likePost, setLikePost] = useState(data._data?.likes)
 
-    <Actions>
-        <LikeButton>
-            <Like>12</Like>
+    function formatTimePost(){
+        //console.log(new Date(data._data.created.seconds * 1000));
 
-            <MaterialCommunityIcons name='heart-plus-outline' size={20} color='#E52246'/>
+        const timePost = new Date(data._data.created.seconds * 1000)
 
-        </LikeButton>
-
-        <TimePost>
-            Ha um minuto
-        </TimePost>
-    </Actions>
+        return formatDistance(
+            new Date(),
+            timePost,
+            {
+                locale: ptBR
+            }
+        )
+    };
     
-   </Container>
+    return (
+    <Container>
+        <Header>
+            {data._data.avatarUrl ? (
+                 <Avatar source={{ uri: data._data.avatarUrl }}/>
+            ) : (
+                <Avatar source={require('../../assests/avatar.png')}/>
+            )}
+            
+
+            <Name numberOfLines={1}>
+                {data._data?.autor}
+            </Name>
+        </Header>
+
+        <ContentView>
+            <Content>{data._data?.content}</Content>
+        </ContentView>
+
+        <Actions>
+            <LikeButton>
+                <Like>
+                    {likePost === 0 ? '' : likePost}
+                </Like>
+
+                <MaterialCommunityIcons 
+                name={likePost === 0 ? 'heart-plus-outline' : 'cards-heart'} 
+                size={20} 
+                color='#E52246'/>
+
+            </LikeButton>
+
+            <TimePost>
+                {formatTimePost()}
+            </TimePost>
+        </Actions>
+        
+    </Container>
   );
 }

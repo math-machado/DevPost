@@ -73,6 +73,7 @@ export default function Home() {
         </View>
       ) : (
         <ListPost
+          showsVerticalScrollIndicator={false}
           data={posts}
           renderItem={({item}) => (
             <PostsList 
