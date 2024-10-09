@@ -12,12 +12,12 @@ import { useState } from 'react';
 
 export default function PostsList({data, userId}) { 
 
-    const [likePost, setLikePost] = useState(data._data?.likes)
+    const [likePost, setLikePost] = useState(data?.likes)
 
     function formatTimePost(){
-        //console.log(new Date(data._data.created.seconds * 1000));
+        //console.log(new Date(data.created.seconds * 1000));
 
-        const timePost = new Date(data._data.created.seconds * 1000)
+        const timePost = new Date(data.created.seconds * 1000)
 
         return formatDistance(
             new Date(),
@@ -31,20 +31,20 @@ export default function PostsList({data, userId}) {
     return (
     <Container>
         <Header>
-            {data._data.avatarUrl ? (
-                 <Avatar source={{ uri: data._data.avatarUrl }}/>
+            {data.avatarUrl ? (
+                 <Avatar source={{ uri: data.avatarUrl }}/>
             ) : (
                 <Avatar source={require('../../assests/avatar.png')}/>
             )}
             
 
             <Name numberOfLines={1}>
-                {data._data?.autor}
+                {data?.autor}
             </Name>
         </Header>
 
         <ContentView>
-            <Content>{data._data?.content}</Content>
+            <Content>{data?.content}</Content>
         </ContentView>
 
         <Actions>
