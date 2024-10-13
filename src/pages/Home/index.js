@@ -99,6 +99,39 @@ export default function Home() {
     
   }
 
+  async function getListPosts(){
+    
+    if(empytList){
+      setLoading(false);
+      return;
+    };
+
+    if(loading) return;
+
+    firestore().collection('posts')
+    .orderBy('created', 'desc')
+    .limit(5)
+    .startAfter(lastItem)
+    .get()
+    .then((snapshot) => {
+      const postList = []
+
+      snapshot.docs.map((u) => {
+        postList.push({
+          ...u.data(),
+          id: u.id
+        })
+      })
+
+      setEmpytList(!!snapshot.empty);
+      setLastItem(snapshot.docs[snapshot.docs.length - 1]);
+      setPosts((oldPosts) => [...oldPosts, ...postList]);
+      setLoading(false)
+
+
+    })
+  }
+
   return (
     <Container>
       <Header />
@@ -113,10 +146,14 @@ export default function Home() {
           data={posts}
           renderItem={({item}) => (
             <PostsList 
-            data={item} userId={user?.id}/>
+            data={item} userId={user?.uid}/>
           )}
+
           refreshing={loadingRefresh}
           onRefresh={ handleRefreshPosts }
+
+          onEndReached={() => getListPosts()}
+          onEndReachedThreshold={0.1}
         />
       )}
 
