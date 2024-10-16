@@ -11,6 +11,7 @@ import Header from '../../components/Header';
 import Feather from 'react-native-vector-icons/Feather'
 
 import firestore from '@react-native-firebase/firestore'
+import storage from '@react-native-firebase/storage'
 
 import { launchImageLibrary } from 'react-native-image-picker';
 
@@ -69,10 +70,49 @@ export default function Profile() {
       }else if(response.errorCode){
         console.log('ERROR: ' + response.errorCode);
       }else{
-        
+        uploadFileFirebase(response)
+        .then(() => {
+          uploadAvatarPost()
+        })
+        console.log('URI DA FOTO: ' + response.assets[0].uri);
+        setUrl(response.assets[0].uri)
       }
     })
-  }
+  };
+
+  async function uploadFileFirebase(response){
+    const fileSource = response.assets[0].uri
+    
+    const storageRef = storage().ref('users').child(user?.uid);
+
+    return await storageRef.putFile(fileSource);
+    
+  };
+
+  async function uploadAvatarPost(){
+
+    const storageRef = storage().ref('users').child(user.uid);
+
+    await storageRef.getDownloadURL()
+    .then( async image => {
+
+      console.log('URL DA FOTO RECEBIDA: ', image);
+      
+      const userPosts = await firestore().collection('posts')
+      .where('userid', '==', user.uid).get()
+  
+      userPosts.forEach( async doc => {
+        await firestore().collection('posts')
+        .doc(doc.id).update({
+          avatarUrl: image
+        })
+      })
+    })
+    .catch((error) => {
+      console.log('ERROR: ', error);
+      
+    })
+  };
 
   return(
     <Container>
