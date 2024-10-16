@@ -23,6 +23,23 @@ export default function Profile() {
 
   const [open, setOpen] = useState(false)
 
+  useEffect(() => {
+    async function loadAvatar(){
+      try {
+
+        let response = await storage().ref('users').child(user.uid).getDownloadURL()
+
+        setUrl(response)
+
+      } catch (error) {
+        console.log('NÂO ENCONTRAMOS NENHUMA FOTO');
+      }
+    };
+    
+    loadAvatar();
+
+  }, [])
+
   async function handleSignOut(){
     await signOut();
   };
