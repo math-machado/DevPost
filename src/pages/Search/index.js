@@ -8,6 +8,8 @@ import { useState, useEffect } from 'react';
 
 import firestore from '@react-native-firebase/firestore'
 
+import SearchList from '../../components/SearchList';
+
 export default function Search() {
 
   const [input, setInput] = useState('')
@@ -54,6 +56,11 @@ export default function Search() {
       />
 
     </AreaInput>
+
+    <List
+    data={users}
+    renderItem={({item}) => <SearchList data={item}/>}
+    />
    </Container>
   );
 }

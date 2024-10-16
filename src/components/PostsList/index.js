@@ -8,11 +8,13 @@ import { id, ptBR } from 'date-fns/locale'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import firestore from '@react-native-firebase/firestore'
 
 import { useNavigation } from '@react-navigation/native';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PostsList({data, userId}) { 
 
@@ -20,6 +22,20 @@ export default function PostsList({data, userId}) {
 
     const [likePost, setLikePost] = useState(data?.likes)
     const [myLike, setMyLike] = useState(false)
+
+    useEffect(() => {
+        async function handleStorage(){
+           const myLikeStorage = await AsyncStorage.getItem('@myLike')
+           
+           setMyLike(JSON.parse(myLikeStorage))
+        }
+
+        handleStorage()
+    })
+
+    async function handleSetStorage(){
+        await AsyncStorage.setItem('@myLike', JSON.stringify(myLike))
+    };
 
     function formatTimePost(){
         //console.log(new Date(data.created.seconds * 1000));
@@ -52,6 +68,7 @@ export default function PostsList({data, userId}) {
             .then(() => {
                 setLikePost(likes - 1)
                 setMyLike(false)
+                handleSetStorage()
             })
 
             return;
@@ -70,6 +87,7 @@ export default function PostsList({data, userId}) {
         .then(() => {
             setLikePost(likes + 1)
             setMyLike(true)
+            handleSetStorage()
         })
 
     }

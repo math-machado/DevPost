@@ -57,7 +57,12 @@ function AuthProvider({children}){
 
         })
         .catch((error) => {
-            console.log(error);
+            console.log(error.message());
+
+            if(error === 'auth/invalid-credential'){
+                console.log('TESTE');
+                
+            }
             setLoadingAuth(false);
         })
     };
