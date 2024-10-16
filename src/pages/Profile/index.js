@@ -24,12 +24,17 @@ export default function Profile() {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
+
+    let isActive = true;
+
     async function loadAvatar(){
       try {
+        if(isActive){
 
         let response = await storage().ref('users').child(user.uid).getDownloadURL()
 
         setUrl(response)
+        }
 
       } catch (error) {
         console.log('NÂO ENCONTRAMOS NENHUMA FOTO');
@@ -37,6 +42,9 @@ export default function Profile() {
     };
     
     loadAvatar();
+
+    return () => isActive = false;
+    
 
   }, [])
 
