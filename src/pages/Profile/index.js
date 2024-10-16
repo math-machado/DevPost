@@ -10,11 +10,15 @@ import Header from '../../components/Header';
 
 import Feather from 'react-native-vector-icons/Feather'
 
+import firestore from '@react-native-firebase/firestore'
+
+import { launchImageLibrary } from 'react-native-image-picker';
+
 export default function Profile() {
-  const { signOut, user } = useContext(AuthContext)
+  const { signOut, user, setUser, storageUser } = useContext(AuthContext)
 
   const [nome, setNome] = useState(user?.nome);
-  const [url, setUrl] = useState('https://sujeitoprogramador.com/steve.png');
+  const [url, setUrl] = useState(null);
 
   const [open, setOpen] = useState(false)
 
@@ -23,7 +27,51 @@ export default function Profile() {
   };
 
   async function updateProfile() {
-    alert('TESTE')
+    if(nome === ''){
+      return;
+    }
+
+    await firestore().collection('users')
+    .doc(user?.uid)
+    .update({
+      nome: nome
+    })
+
+    const postDocs = await firestore().collection('posts')
+    .where('userid', '==', user?.uid).get();
+
+    postDocs.forEach( async doc => {
+      await firestore().collection('posts')
+      .doc(doc.id).update({
+        autor: nome
+      })
+    })
+
+    let data = {
+      uid: user.uid,
+      nome: nome,
+      email: user.email
+    }
+
+    setUser(data)
+    storageUser(data)
+    setOpen(false)
+  };
+
+  function uploadFile(){
+    const options = {
+      mediaType: 'photo'
+    }
+
+    launchImageLibrary(options, response => {
+      if(response.didCancel){
+        console.log('Usuario cancelou');
+      }else if(response.errorCode){
+        console.log('ERROR: ' + response.errorCode);
+      }else{
+        
+      }
+    })
   }
 
   return(
@@ -31,14 +79,14 @@ export default function Profile() {
       <Header/>
 
       {url ? (
-        <UploadButton>
+        <UploadButton onPress={ uploadFile }>
           <UploadText>+</UploadText>
           <Avatar
             source={{ uri: url}}
           />
         </UploadButton>
       ) : (
-        <UploadButton>
+        <UploadButton onPress={ uploadFile }>
           <UploadText>+</UploadText>
         </UploadButton>
       )}
